@@ -18,7 +18,7 @@ const host = (result, theme) => `<!doctype html><html><head><meta charset="utf-8
 iframe{width:100%;border:1px solid ${theme === "dark" ? "#3a3a38" : "#ddd"};border-radius:12px;background:transparent;display:block}</style></head><body>
 <iframe id="v" sandbox="allow-scripts" height="120"></iframe>
 <script>
-const result = ${JSON.stringify(result)};
+const result = ${JSON.stringify(result).replace(/</g, "\\u003c")};
 const f = document.getElementById("v");
 window.log = [];
 window.addEventListener("message", (e) => {
@@ -31,7 +31,7 @@ window.addEventListener("message", (e) => {
   }
   if (m.method === "ui/notifications/size-changed") f.style.height = m.params.height + "px";
 });
-f.srcdoc = ${JSON.stringify(view)};
+f.srcdoc = ${JSON.stringify(view).replace(/</g, "\\u003c")};
 </script></body></html>`;
 
 const browser = await chromium.launch(process.env.FV_BROWSER ? { executablePath: process.env.FV_BROWSER } : {});

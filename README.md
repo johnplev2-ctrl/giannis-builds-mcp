@@ -10,6 +10,7 @@ A remote MCP server on Cloudflare Workers with four read-only tools that do real
 - **Protocol versions:** it answers both the 2025-11-25 handshake (`initialize`, as most clients send today) and 2026-07-28 requests (`server/discover`, with the version carried on every request). Both are checked live in `qa/live-curl-2026-11-20.txt`.
 - **Runs on:** the Workers Free plan. The bundle is 243 KiB gzipped and starts in 57 ms. It has no bindings, no secrets and no storage.
 - **Safety:** every tool is read-only and declares `readOnlyHint: true` and `destructiveHint: false`. A browser `Origin` that is not allowed gets a 403, which protects against DNS rebinding.
+- **`video_url` limits:** https only, no credentials in the URL, at most 24 reads per call, and a whole-file fallback of at most 64 MB when the host ignores range requests. Only box headers and the index are parsed. Nothing is stored, and only the measurements are returned.
 
 ## Tools
 
@@ -34,7 +35,7 @@ Every tool points to `ui://giannis-builds/result-view-v1.html` (`_meta.ui.resour
 
 The view uses no SDK and makes no external requests. It runs the spec's postMessage handshake (`ui/initialize` → `ui/notifications/initialized` → `ui/notifications/tool-result`), reports its height, and takes the host's theme variables. Hosts without MCP Apps show the text result instead.
 
-`test/view.check.mjs` renders the view in Chromium with a simulated host that follows the spec, using results from the live server. The screenshots are in `qa/view/`.
+`test/view.test.mjs` runs the view script against a fake host. It checks the spec handshake order, the rendering of every tool's real result, and HTML escaping. `test/view.check.mjs` renders the view in Chromium with a simulated host fed by the live server and saves screenshots to `qa/view/` (it needs a browser, so it is not part of `npm test`).
 
 ## Add it to your assistant
 
@@ -75,9 +76,9 @@ curl -s https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp \
 
 ```bash
 npm install
-npm test                      # 35 tests: unit tests per tool (incl. 8 real MP4 fixtures through the range reader) + the protocol suite in-process
+npm test                      # 42 tests: unit tests per tool (incl. 8 real MP4 fixtures through the range reader), the protocol suite in-process, the view script
 npm run test:live             # 13 tests against the deployed URL: initialize, tools/list, resources/read, tools/call for every tool, errors, Origin, video_url on a real hosted file
-node test/view.check.mjs      # the MCP Apps view in Chromium with a simulated host (needs Playwright)
+npm run check:view            # the MCP Apps view in Chromium with a simulated host (needs Playwright)
 ```
 
 The protocol tests use plain `fetch` JSON-RPC, not the MCP SDK, so they test what any client sends. The live run from 20 Nov 2026 is in `qa/live-test-2026-11-20.txt`.

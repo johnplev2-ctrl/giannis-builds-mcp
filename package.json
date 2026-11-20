@@ -6,9 +6,10 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "test": "node --test test/tools.test.mjs test/handler.test.mjs",
+    "test": "node --test test/tools.test.mjs test/handler.test.mjs test/view.test.mjs",
     "test:live": "node --test test/live.test.mjs",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "check:view": "node test/view.check.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.4.0",
