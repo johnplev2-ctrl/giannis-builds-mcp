@@ -1,0 +1,12 @@
+# Live curl evidence, 2026-11-20T18:08Z, https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp
+## 2025-11-25 initialize
+data: {"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listChanged":true},"resources":{"listChanged":true}},"serverInfo":{"name":"giannis-builds-mcp","title":"Giannis Builds: calculators and checks","v
+## 2025-11-25 tools/list (names)
+"name":"estimate_abandoned_checkout_recovery" "name":"estimate_internal_tool_cost" "name":"check_app_preview_spec" "name":"list_services" 
+## 2025-11-25 tools/call estimate_internal_tool_cost (summary)
+"summary":"Over 24 months, the custom tool costs USD 5,310 less than Airtable Team. It passes the SaaS bill in month 2."
+## 2026-07-28 server/discover (with Mcp-Method header)
+{"result":{"supportedVersions":["2026-07-28"],"capabilities":{"tools":{"listChanged":true},"resources":{"listChanged":true}},"instructions":"Read-only calculators and checks from giannis-builds.pages.dev. Every number comes from a dated public source listed in
+
+## 2026-07-28 tools/call list_services
+"summary":"1 service line on https://giannis-builds.pages.dev."

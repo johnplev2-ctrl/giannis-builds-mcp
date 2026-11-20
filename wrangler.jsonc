@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "giannis-builds-mcp",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  // agents/mcp/server uses AsyncLocalStorage (node:async_hooks).
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+  // No bindings, no secrets, no storage: every tool is a pure function of its input (check_app_preview_spec's
+  // video_url mode only reads the given public file).
+}

@@ -1,0 +1,129 @@
+{
+  "_comment": "Copy of builder/proof-page/src/services.json (read 20 Nov 2026) without the contact email. Prices here are the ones published on each service page of giannis-builds.pages.dev. No ratings, no reviews.",
+  "person": {
+    "name": "Giannis Plevris",
+    "jobTitle": "Cloudflare Workers and internal tools developer",
+    "knowsAbout": [
+      "Cloudflare Workers",
+      "Cloudflare Pages Functions",
+      "Cloudflare D1",
+      "Cloudflare Access",
+      "Playwright",
+      "Klaviyo flows",
+      "App Store preview videos",
+      "ffmpeg"
+    ]
+  },
+  "services": [
+    {
+      "slug": "cloudflare-workers-developer",
+      "name": "Internal tools on Cloudflare Workers",
+      "serviceType": "Cloudflare Workers development",
+      "description": "One internal tool on the client's own Cloudflare account: a request form, a D1 database, alerts by email or Telegram and a dashboard, with Cloudflare Access roles, an audit log, CSV export, Playwright tests and a handover doc. Fixed price.",
+      "offers": [
+        {
+          "name": "Ops tool, Starter",
+          "price": "450",
+          "description": "One workflow: form, D1 database, alerts by email or Telegram, dashboard; login and roles through Cloudflare Access; audit log and CSV export; Playwright tests; handover doc. Delivered in 7 days."
+        },
+        {
+          "name": "Ops tool, Standard",
+          "price": "900",
+          "description": "Starter, plus up to 3 screens and 1 integration (Google Sheets, Telegram or a webhook). Delivered in 10 days, paid in two milestones of 50 % each."
+        }
+      ]
+    },
+    {
+      "slug": "klaviyo-flows-setup",
+      "name": "Klaviyo flows setup for Shopify: Core Five",
+      "serviceType": "Klaviyo email flow setup",
+      "description": "Five Klaviyo flows for a Shopify store (welcome, abandoned checkout, browse abandonment, post-purchase, winback with a sunset rule) and fourteen emails, built in Draft in the store's own Klaviyo account, with a deliverability check, QA, a handover doc and a day-14 read-out. Fixed price.",
+      "offers": [
+        {
+          "name": "Core Five, founding price",
+          "price": "450",
+          "description": "All five flows and fourteen emails in 7 days. Founding price for the first 2 Core Five brands, then USD 750."
+        },
+        {
+          "name": "Checkout Recovery",
+          "price": "250",
+          "description": "Abandoned checkout (3 emails) and browse abandonment (2 emails), one template, the deliverability check and QA, in 3 days."
+        }
+      ]
+    },
+    {
+      "slug": "app-store-preview-video",
+      "name": "App Store preview videos from your screen recordings",
+      "serviceType": "App Store preview video production",
+      "description": "App Store preview videos cut from the app's own screen recordings at the sizes Apple accepts, each file measured against Apple's published specification, with a poster frame and a spec report; Google Play video, feature graphic and social cuts on the larger tiers. Fixed price.",
+      "offers": [
+        {
+          "name": "Starter",
+          "price": "89",
+          "description": "One App Store preview for one device class, up to 4 captions, a sound bed or silence, the poster frame and the spec report. 3 days, 1 round of revisions."
+        },
+        {
+          "name": "Standard",
+          "price": "179",
+          "description": "Up to 2 previews, or iPhone and iPad sizes, plus the Google Play video, its feature graphic and the YouTube settings checklist. 4 days, 2 rounds of revisions."
+        },
+        {
+          "name": "Launch",
+          "price": "349",
+          "description": "Standard, plus 9:16 and 4:5 social cuts with up to 3 opening lines and captions in one more language. 5 days, 2 rounds of revisions."
+        },
+        {
+          "name": "Agency 5-pack",
+          "price": "450",
+          "description": "Five apps at Starter scope on one invoice, in 10 working days. 1 round of revisions per app."
+        }
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "slug": "app-store-preview-checker",
+      "name": "App Store preview video checker",
+      "applicationCategory": "MultimediaApplication",
+      "description": "Checks an App Store preview video against Apple's App Preview specification in the browser: accepted size per device class, 15 to 30 seconds, up to 30 fps, H.264 up to High Profile Level 4.0 or ProRes 422 HQ, stereo AAC at 44.1 or 48 kHz, up to 500 MB. The file is read on the device and never uploaded.",
+      "featureList": [
+        "Accepted size per device class, with the rotation flag",
+        "Length, frame rate and variable frame rate",
+        "Video codec, H.264 profile, level and progressive scan",
+        "Audio codec, channels and sample rate",
+        "A fix for every failed line, and one ffmpeg command",
+        "Google Play YouTube link check"
+      ]
+    },
+    {
+      "slug": "abandoned-checkout-calculator",
+      "type": "WebApplication",
+      "name": "Abandoned checkout calculator",
+      "applicationCategory": "BusinessApplication",
+      "browserRequirements": "Requires JavaScript. Runs in the browser; nothing typed into it is sent.",
+      "description": "Estimates the monthly Klaviyo-attributed revenue of a 3-email abandoned-checkout flow for a Shopify store, as a low, likely and high range from Klaviyo's published revenue per delivered email (25th and 75th percentile by yearly revenue and average order value). Runs in the browser.",
+      "featureList": [
+        "Abandoned checkouts from sessions or orders, or the Shopify admin count",
+        "Klaviyo benchmark row by yearly revenue and average order value",
+        "Low, likely and high range a month and a year",
+        "Net of an existing one-email flow, or the gap of a full flow to the benchmarks",
+        "Every source with the date it was read"
+      ]
+    },
+    {
+      "slug": "internal-tool-cost-calculator",
+      "type": "WebApplication",
+      "name": "Internal tool cost calculator",
+      "applicationCategory": "BusinessApplication",
+      "browserRequirements": "Requires JavaScript. Runs in the browser; nothing typed into it is sent.",
+      "description": "Compares per-seat no-code tools (Retool, Airtable, Softr, Glide, Notion) at list prices read on the vendors' own pages with a one-off custom tool on the buyer's own Cloudflare account, month by month, with the break-even month. Runs in the browser.",
+      "featureList": [
+        "Cheapest plan that fits the team, per vendor",
+        "Builders and users billed the way each vendor bills them",
+        "Cumulative cost chart and break-even month",
+        "Optional care plan, and Cloudflare Access above 50 users",
+        "When the SaaS tool is the better choice"
+      ]
+    }
+  ]
+}
