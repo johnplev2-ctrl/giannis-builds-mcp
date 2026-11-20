@@ -83,4 +83,15 @@ export function protocolSuite(label, url, doFetch = fetch) {
     const res = await doFetch(url, { method: "POST", headers: { origin: "https://evil.example", "content-type": "application/json", accept: "application/json, text/event-stream" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }) });
     assert.equal(res.status, 403);
   });
+
+  test(`${label}: browser Origins of the three chat hosts are accepted, with a CORS preflight`, async () => {
+    for (const origin of ["https://claude.ai", "https://chatgpt.com", "https://grok.com"]) {
+      const pre = await doFetch(url, { method: "OPTIONS", headers: { origin, "access-control-request-method": "POST", "access-control-request-headers": "content-type, mcp-protocol-version" } });
+      assert.ok(pre.status === 200 || pre.status === 204, `${origin} preflight: ${pre.status}`);
+      assert.equal(pre.headers.get("access-control-allow-origin"), "*");
+      const res = await doFetch(url, { method: "POST", headers: { origin, "content-type": "application/json", accept: "application/json, text/event-stream", "mcp-protocol-version": "2025-11-25" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }) });
+      assert.equal(res.status, 200, `${origin}: ${res.status}`);
+      await res.body?.cancel();
+    }
+  });
 }

@@ -4,7 +4,17 @@ import { createMcpHandler } from "agents/mcp/server";
 import { createServer, SERVER_INFO, TOOLS } from "./server.js";
 
 const REPO = "https://github.com/johnplev2-ctrl/giannis-builds-mcp";
-const mcp = createMcpHandler(() => createServer(), { route: "/mcp" });
+
+// Origin rule (MCP transport spec: validate Origin, 403 when it is invalid). Requests with no Origin header are
+// server-side clients (Claude, ChatGPT and Grok connectors call from their own cloud) and are always accepted.
+// Browser calls are accepted from these hostnames only; any other browser Origin gets 403.
+export const ALLOWED_ORIGIN_HOSTNAMES = [
+  "localhost", "127.0.0.1", "[::1]", // MCP Inspector and local dev
+  "giannis-builds-mcp.focalvero-desks.workers.dev", // this Worker
+  "claude.ai", "chatgpt.com", "grok.com", // the three chat hosts, if they ever call from the browser
+  "giannis-builds.pages.dev", // the proof site
+];
+const mcp = createMcpHandler(() => createServer(), { route: "/mcp", allowedOriginHostnames: ALLOWED_ORIGIN_HOSTNAMES });
 
 const SECURITY_HEADERS = {
   "x-content-type-options": "nosniff",
@@ -22,13 +32,13 @@ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,
 main{max-width:720px;margin:0 auto;padding:40px 16px}h1{font-size:28px;margin:0 0 8px}h2{font-size:18px;margin:28px 0 8px}
 code{background:rgba(127,127,127,.14);padding:2px 6px;border-radius:5px;word-break:break-all}.mute{color:var(--mute)}a{color:var(--accent)}li{margin:6px 0}</style></head>
 <body><main><h1>Giannis Builds MCP</h1>
-<p class="mute">A remote MCP server on Cloudflare Workers (streamable HTTP, stateless). Read-only tools that do real work, and one MCP Apps view that renders results inside the chat.</p>
+<p class="mute">A remote MCP server on Cloudflare Workers (streamable HTTP, stateless). Read-only tools that do real work, and one MCP Apps view for hosts that render MCP Apps inside the chat (Claude and ChatGPT document support); other clients get the text result.</p>
 <h2>Server URL</h2><p><code>${url}</code></p>
 <h2>Connect</h2><ul>
 <li><b>Claude</b> (web, desktop, mobile): Customize, Connectors, + Add, Add custom connector. Paste the URL, choose No sign in, Add.</li>
 <li><b>ChatGPT</b>: chatgpt.com/plugins, +, Add custom MCP server. Paste the URL, no authentication.</li>
 <li><b>Grok</b>: grok.com/connectors, New Connector, Custom. Paste the URL.</li>
-<li><b>Any MCP client</b>: streamable HTTP transport at the URL above.</li></ul>
+<li><b>Any MCP client</b>: streamable HTTP transport at the URL above. Server-side clients send no Origin and are accepted; browser calls are accepted from localhost, claude.ai, chatgpt.com, grok.com and giannis-builds.pages.dev, and any other browser Origin gets 403.</li></ul>
 <h2>Tools</h2><ul>${tools}</ul>
 <p class="mute">Source and tests: <a href="${REPO}">${REPO.replace("https://", "")}</a> · Built by Giannis Plevris · <a href="https://giannis-builds.pages.dev">giannis-builds.pages.dev</a></p>
 </main></body></html>`;

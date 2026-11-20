@@ -3,12 +3,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { protocolSuite } from "./suite.mjs";
+import { sdkClientSuite } from "./sdk-client.mjs";
 import { client } from "./rpc.mjs";
 
 const url = process.env.MCP_URL ?? "https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp";
 const origin = new URL(url).origin;
 
 protocolSuite("live", url);
+sdkClientSuite("live", url);
 
 test("live: check_app_preview_spec reads a real hosted preview by URL", async () => {
   const send = client(url);

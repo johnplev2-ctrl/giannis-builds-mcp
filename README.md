@@ -1,6 +1,6 @@
 # giannis-builds-mcp
 
-A remote MCP server on Cloudflare Workers with four read-only tools that do real work, plus an MCP Apps view that shows each result inside the chat. It works in Claude, ChatGPT, Grok and any other MCP client.
+A remote MCP server on Cloudflare Workers with four read-only tools that do real work, plus an MCP Apps view that shows each result inside the chat in hosts that render MCP Apps. It speaks streamable HTTP, the transport that Claude, ChatGPT and Grok custom connectors use, and it is tested with the official MCP TypeScript client. **Status** below separates what has been checked from what has not.
 
 **Server URL:** `https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp`
 **Landing page:** https://giannis-builds-mcp.focalvero-desks.workers.dev
@@ -9,8 +9,19 @@ A remote MCP server on Cloudflare Workers with four read-only tools that do real
 - **Transport:** streamable HTTP. The server is stateless: each request gets a fresh server, with no sessions and no Durable Objects. It uses `createMcpHandler` from the Cloudflare Agents SDK (`agents` 0.34.0) with the MCP TypeScript SDK v2 (`@modelcontextprotocol/server` 2.4.0).
 - **Protocol versions:** it answers both the 2025-11-25 handshake (`initialize`, as most clients send today) and 2026-07-28 requests (`server/discover`, with the version carried on every request). Both are checked live in `qa/live-curl-2026-11-20.txt`.
 - **Runs on:** the Workers Free plan. The bundle is 243 KiB gzipped and starts in 57 ms. It has no bindings, no secrets and no storage.
-- **Safety:** every tool is read-only and declares `readOnlyHint: true` and `destructiveHint: false`. A browser `Origin` that is not allowed gets a 403, which protects against DNS rebinding.
+- **Safety:** every tool is read-only and declares `readOnlyHint: true` and `destructiveHint: false`.
+- **Origin rule** (the MCP transport spec says to validate `Origin` and answer 403 when it is invalid): requests with no `Origin` header, which is how server-side clients call (Claude, ChatGPT and Grok connectors call from their own cloud), are accepted. Browser calls are accepted from `localhost`, `127.0.0.1`, `[::1]`, this Worker's host, `claude.ai`, `chatgpt.com`, `grok.com` and `giannis-builds.pages.dev`, with a CORS preflight. Any other browser `Origin` gets a 403, which protects against DNS rebinding. The list is `ALLOWED_ORIGIN_HOSTNAMES` in `src/index.js`.
 - **`video_url` limits:** https only, no credentials in the URL, at most 24 reads per call, and a whole-file fallback of at most 64 MB when the host ignores range requests. Only box headers and the index are parsed. Nothing is stored, and only the measurements are returned.
+
+## Status (20 Nov 2026)
+
+Checked:
+- The deployed URL, over plain JSON-RPC and through the official MCP TypeScript client: initialize (2025-11-25), `server/discover` (2026-07-28), tools/list, tools/call for every tool, resources/read of the view, errors, the Origin rule and CORS (`qa/live-test-2026-11-20.txt`, `qa/live-curl-2026-11-20.txt`).
+- The view script against a fake MCP Apps host (`test/view.test.mjs`), and rendered in Chromium inside a simulated host fed by the live server: 8/8 views (4 tools × 390 px dark and 720 px light), handshake in spec order (`qa/view/`).
+
+Not checked yet:
+- Adding the URL as a custom connector in the Claude, ChatGPT and Grok apps themselves.
+- The view rendered inside a real Claude or ChatGPT chat.
 
 ## Tools
 
@@ -19,7 +30,7 @@ A remote MCP server on Cloudflare Workers with four read-only tools that do real
 | `estimate_abandoned_checkout_recovery` | Estimates monthly revenue from a 3-email abandoned-checkout flow for a Shopify store, as a low / likely / high range. It also gives a verdict and the benchmark row it used. | Klaviyo's published revenue per recipient (25th and 75th percentile, by revenue band and AOV), read 20 Nov 2026 |
 | `estimate_internal_tool_cost` | Compares the per-seat cost of Retool, Airtable, Softr, Glide or Notion with a one-off custom tool on the buyer's own Cloudflare account, month by month, and gives the break-even month. | Each vendor's own pricing page, read 20 Nov 2026 |
 | `check_app_preview_spec` | Checks an App Store preview against Apple's App Preview spec: size per device class, 15 to 30 s, up to 30 fps, codec, profile and level, audio, file size. It gives a fix for every failed line and one `ffmpeg` command. Pass `video_url` and the Worker reads only the file's index over HTTP range requests (an MP4/QuickTime box parser written for this). Or pass the measured values. | Apple's App Preview specifications, read 20 Nov 2026 |
-| `list_services` | Lists the fixed-price services and free tools published on giannis-builds.pages.dev, with prices. | `src/lib/services.json` |
+| `list_services` | Lists the fixed-price services and free tools published on giannis-builds.pages.dev, with prices, plus the MCP connector build offered in this README (same two price points; it is not listed on the site yet, and the result says so). | `src/lib/services.json` |
 
 The maths is the same code that runs the free calculators on https://giannis-builds.pages.dev (`src/lib/*.js`, copied unchanged from the proof page, MIT). Each result returns its sources and the date they were read. Every result also comes in two forms: as text for the model and as `structuredContent` for the view.
 
@@ -27,7 +38,7 @@ The maths is the same code that runs the free calculators on https://giannis-bui
 
 ## The in-chat view (MCP Apps)
 
-Every tool points to `ui://giannis-builds/result-view-v1.html` (`_meta.ui.resourceUri`, MIME type `text/html;profile=mcp-app`, MCP Apps spec 2026-01-26). Hosts that support MCP Apps, such as Claude on web and desktop or ChatGPT, render the result as a card in the conversation:
+Every tool points to `ui://giannis-builds/result-view-v1.html` (`_meta.ui.resourceUri`, MIME type `text/html;profile=mcp-app`, MCP Apps spec 2026-01-26). Claude ([MCP Apps docs](https://claude.com/docs/connectors/building/mcp-apps/quickstart)) and ChatGPT ([Apps SDK docs](https://developers.openai.com/apps-sdk/mcp-apps-in-chatgpt)) document support for this standard. In a host that renders it, the view shows:
 
 - the checkout range as bars;
 - the vendor comparison as a table;
@@ -35,7 +46,7 @@ Every tool points to `ui://giannis-builds/result-view-v1.html` (`_meta.ui.resour
 
 The view uses no SDK and makes no external requests. It runs the spec's postMessage handshake (`ui/initialize` → `ui/notifications/initialized` → `ui/notifications/tool-result`), reports its height, and takes the host's theme variables. Hosts without MCP Apps show the text result instead.
 
-`test/view.test.mjs` runs the view script against a fake host. It checks the spec handshake order, the rendering of every tool's real result, and HTML escaping. `test/view.check.mjs` renders the view in Chromium with a simulated host fed by the live server and saves screenshots to `qa/view/` (it needs a browser, so it is not part of `npm test`).
+`test/view.test.mjs` runs the view script against a fake host. It checks the spec handshake order, the rendering of every tool's real result, and HTML escaping. `test/view.check.mjs` renders the view in Chromium with a simulated host fed by the live server and saves screenshots to `qa/view/` (it needs a browser, so it is not part of `npm test`). The 20 Nov run rendered all 8 views (`qa/view/`). The render inside a real Claude or ChatGPT chat has not been recorded yet (see **Status**).
 
 ## Add it to your assistant
 
@@ -57,7 +68,7 @@ Workspace policies apply. (OpenAI Apps SDK docs, "Connect from ChatGPT", read 20
 
 **Grok:** go to **grok.com/connectors**, then **New Connector → Custom**, and paste the URL. Business and Enterprise admins use **+ Add Connector → Other**. (docs.x.ai, read 20 Nov 2026.)
 
-**Any MCP client** that speaks streamable HTTP can use the URL as it is. For example:
+**Other MCP clients** that speak streamable HTTP can use the URL as it is when they call from a server, or from one of the browser origins in the Origin rule above. For example:
 
 ```bash
 claude mcp add --transport http giannis-builds https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp   # Claude Code
@@ -76,17 +87,17 @@ curl -s https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp \
 
 ```bash
 npm install
-npm test                      # 42 tests: unit tests per tool (incl. 8 real MP4 fixtures through the range reader), the protocol suite in-process, the view script
-npm run test:live             # 13 tests against the deployed URL: initialize, tools/list, resources/read, tools/call for every tool, errors, Origin, video_url on a real hosted file
+npm test                      # 46 tests: unit tests per tool (incl. 8 real MP4 fixtures through the range reader), the protocol suite and the official MCP client in-process, the view script
+npm run test:live             # 15 tests against the deployed URL: the same protocol suite, the official MCP client, Origin and CORS, video_url on a real hosted file
 npm run check:view            # the MCP Apps view in Chromium with a simulated host (needs Playwright)
 ```
 
-The protocol tests use plain `fetch` JSON-RPC, not the MCP SDK, so they test what any client sends. The live run from 20 Nov 2026 is in `qa/live-test-2026-11-20.txt`.
+The protocol suite uses plain `fetch` JSON-RPC, so it tests the bytes any client sends. `test/sdk-client.mjs` then does the same work through the official MCP TypeScript client (`@modelcontextprotocol/client` 2.4.0): connect, list tools, call every tool, read the view. The latest live run is in `qa/live-test-2026-11-20.txt`.
 
 ## Deploy and roll back
 
 ```bash
-npx wrangler deploy                          # Workers Free plan; prints the workers.dev URL
+npm run deploy                               # npm test, then wrangler deploy, then the live suite; a failing local test stops the deploy
 npx wrangler rollback                        # back to the previous version
 npx wrangler delete giannis-builds-mcp       # remove it entirely
 ```
@@ -97,7 +108,7 @@ This server is the proof. A client build follows the same pattern around **your*
 
 - **Your API behind OAuth 2.1 with PKCE.** Account linking for your users is done with Cloudflare's `workers-oauth-provider`. The tokens are scoped to your API, and no secrets reach the model.
 - **Typed tools** that call your existing endpoints, with clear errors and read-only or destructive hints. Long-running jobs report progress and are polled, never blocking the chat.
-- **An MCP Apps view** for previews, results or forms. It renders in Claude and ChatGPT, with a text fallback everywhere else.
+- **An MCP Apps view** for previews, results or forms, for hosts that render MCP Apps (Claude and ChatGPT document support), with a text fallback everywhere else.
 - **Unit tests and a live protocol test** against your deployed URL. You also get setup notes for Claude, ChatGPT and Grok, and a handover doc.
 
 | | Starter | Standard |
@@ -106,7 +117,7 @@ This server is the proof. A client build follows the same pattern around **your*
 | Delivery | 7 days | 10 days |
 | Scope | up to 5 tools over your existing API, OAuth 2.1 + PKCE, tests, deploy, setup notes | Starter, plus up to 12 tools, one MCP Apps view, long-running jobs with progress, one webhook or billing integration |
 
-These are the builder line's two published prices (giannis-builds.pages.dev/cloudflare-workers-developer). This is a new service: there are no client builds or reviews yet, and this repository is the work to judge.
+These are the builder line's two price points, published for the Ops tool on giannis-builds.pages.dev/cloudflare-workers-developer. The MCP connector build itself is offered here and is not listed on that site yet. This is a new service: there are no client builds or reviews yet, and this repository is the work to judge.
 
 Contact: through https://giannis-builds.pages.dev.
 

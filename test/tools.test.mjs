@@ -119,6 +119,21 @@ test("preview metadata: full spec given (HEVC, mono, 44.1 kHz) fails codec and a
   assert.match(r.ffmpeg_fix_command, /libx264/);
 });
 
+test("preview metadata: a passing row never carries a fix (886x1920, 20 s, 30 fps, 40 MB)", async () => {
+  const r = await preview.run({ width: 886, height: 1920, duration_seconds: 20, fps: 30, file_size_mb: 40 });
+  const passing = r.checks.filter((c) => c.status === "pass");
+  assert.ok(passing.length >= 4);
+  for (const c of passing) assert.equal(c.fix, undefined, `${c.id} passes but carries fix: ${c.fix}`);
+  for (const a of r.advice.filter((x) => x.status === "pass")) assert.equal(a.note, undefined, `${a.id} passes but carries a note`);
+  assert.doesNotMatch(JSON.stringify(r), /Cut -|No accepted size has this shape|Convert it to 30 fps|Export at a lower bitrate/);
+});
+
+test("preview metadata: a failing row keeps its fix", async () => {
+  const r = await preview.run({ width: 1170, height: 2532, duration_seconds: 34, fps: 60 });
+  for (const c of r.checks.filter((x) => x.status === "fail")) assert.ok(c.fix && c.fix.length > 10, `${c.id} fails without a fix`);
+  assert.match(r.checks.find((c) => c.id === "length").fix, /^Cut 4 s/);
+});
+
 test("preview metadata: missing fields give a clear error", async () => {
   const r = await preview.run({ width: 886 });
   assert.equal(r.ok, false);
@@ -144,6 +159,7 @@ for (const [file, verdict, fails] of EXPECT) {
     assert.equal(r.verdict, verdict);
     assert.deepEqual(r.checks.filter((c) => c.status === "fail" || c.status === "unknown").map((c) => c.id).sort(), fails);
     assert.ok(fetchImpl.calls.every((h) => /^bytes=\d+-\d+$/.test(h)), "every read is a range read");
+    for (const c of r.checks) if (c.status === "pass") assert.equal(c.fix, undefined, `${c.id} passes but carries a fix`);
   });
 }
 
@@ -170,6 +186,10 @@ test("services: builder line has the two published prices and the MCP build at t
   assert.deepEqual(r.services[0].offers.map((o) => o.price_usd), [450, 900]);
   assert.deepEqual(r.mcp_connector_build.offers.map((o) => [o.price_usd, o.days]), [[450, 7], [900, 10]]);
   assert.match(r.terms, /No reviews or ratings/);
+  // The connector build is not on giannis-builds.pages.dev: the result must not call it published there.
+  assert.equal(r.mcp_connector_build.listed_on_site, false);
+  assert.match(r.summary, /not on the site yet/);
+  assert.doesNotMatch(services.config.description, /MCP connectors on Cloudflare Workers, Klaviyo/);
 });
 
 test("services: all lines and the three free tools; no email address, rating or review in the output", () => {

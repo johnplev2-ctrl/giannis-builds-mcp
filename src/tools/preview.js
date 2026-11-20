@@ -165,8 +165,10 @@ function shape(result, extra) {
     summary,
     ...extra,
     display_size: result.display ? { width: result.display.w, height: result.display.h } : null,
-    checks: result.rows.map((r) => ({ id: r.id, check: r.label, apple_spec: r.spec, measured: r.measured, status: r.status, fix: r.fix || undefined })),
-    advice: result.advice.map((r) => ({ id: r.id, check: r.label, target: r.spec, measured: r.measured, status: r.status, note: r.fix })),
+    // preview-spec.js builds a fix string for every row; only a failing or unreadable row may carry one, or the model
+    // reads "Cut -10 s" or "No accepted size has this shape" next to a pass.
+    checks: result.rows.map((r) => ({ id: r.id, check: r.label, apple_spec: r.spec, measured: r.measured, status: r.status, fix: (r.status === "fail" || r.status === "unknown") && r.fix ? r.fix : undefined })),
+    advice: result.advice.map((r) => ({ id: r.id, check: r.label, target: r.spec, measured: r.measured, status: r.status, note: r.status !== "pass" && r.fix ? r.fix : undefined })),
     ffmpeg_fix_command: result.command,
     accepted_sizes: failing.some((r) => r.id === "size") ? accepted : undefined,
     limits: { seconds: [APPLE.minSec, APPLE.maxSec], max_fps: APPLE.maxFps, max_mb: APPLE.maxBytes / 1e6 },

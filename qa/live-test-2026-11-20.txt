@@ -1,88 +1,24 @@
-TAP version 13
-# Subtest: live: initialize
-ok 1 - live: initialize
-  ---
-  duration_ms: 462.6765
-  type: 'test'
-  ...
-# Subtest: live: tools/list has the four tools, typed schemas, read-only annotations and the MCP Apps view
-ok 2 - live: tools/list has the four tools, typed schemas, read-only annotations and the MCP Apps view
-  ---
-  duration_ms: 87.7245
-  type: 'test'
-  ...
-# Subtest: live: resources/read returns the view as text/html;profile=mcp-app
-ok 3 - live: resources/read returns the view as text/html;profile=mcp-app
-  ---
-  duration_ms: 45.6929
-  type: 'test'
-  ...
-# Subtest: live: tools/call estimate_abandoned_checkout_recovery
-ok 4 - live: tools/call estimate_abandoned_checkout_recovery
-  ---
-  duration_ms: 69.1522
-  type: 'test'
-  ...
-# Subtest: live: tools/call estimate_internal_tool_cost
-ok 5 - live: tools/call estimate_internal_tool_cost
-  ---
-  duration_ms: 36.1039
-  type: 'test'
-  ...
-# Subtest: live: tools/call check_app_preview_spec
-ok 6 - live: tools/call check_app_preview_spec
-  ---
-  duration_ms: 43.2485
-  type: 'test'
-  ...
-# Subtest: live: tools/call list_services
-ok 7 - live: tools/call list_services
-  ---
-  duration_ms: 59.9014
-  type: 'test'
-  ...
-# Subtest: live: tools/call results carry the real numbers
-ok 8 - live: tools/call results carry the real numbers
-  ---
-  duration_ms: 177.2956
-  type: 'test'
-  ...
-# Subtest: live: bad input is refused clearly (schema and domain errors)
-ok 9 - live: bad input is refused clearly (schema and domain errors)
-  ---
-  duration_ms: 108.9951
-  type: 'test'
-  ...
-# Subtest: live: an unknown tool is an error, not a crash
-ok 10 - live: an unknown tool is an error, not a crash
-  ---
-  duration_ms: 41.8337
-  type: 'test'
-  ...
-# Subtest: live: a hostile browser Origin is refused
-ok 11 - live: a hostile browser Origin is refused
-  ---
-  duration_ms: 187.6041
-  type: 'test'
-  ...
-# Subtest: live: check_app_preview_spec reads a real hosted preview by URL
-ok 12 - live: check_app_preview_spec reads a real hosted preview by URL
-  ---
-  duration_ms: 76.4355
-  type: 'test'
-  ...
-# Subtest: live: / and /health answer, GET /mcp is not a session stream
-ok 13 - live: / and /health answer, GET /mcp is not a session stream
-  ---
-  duration_ms: 146.9287
-  type: 'test'
-  ...
-1..13
-# tests 13
-# suites 0
-# pass 13
-# fail 0
-# cancelled 0
-# skipped 0
-# todo 0
-# duration_ms 1720.7744
+# npm run test:live against https://giannis-builds-mcp.focalvero-desks.workers.dev/mcp, run 2026-11-20T20:43:24Z, Worker version 240fa608-f4c2-4138-a260-f163616ac60f
+✔ live: initialize (486.8694ms)
+✔ live: tools/list has the four tools, typed schemas, read-only annotations and the MCP Apps view (46.0376ms)
+✔ live: resources/read returns the view as text/html;profile=mcp-app (58.5071ms)
+✔ live: tools/call estimate_abandoned_checkout_recovery (67.5416ms)
+✔ live: tools/call estimate_internal_tool_cost (77.0052ms)
+✔ live: tools/call check_app_preview_spec (61.7176ms)
+✔ live: tools/call list_services (76.0197ms)
+✔ live: tools/call results carry the real numbers (164.6919ms)
+✔ live: bad input is refused clearly (schema and domain errors) (102.6787ms)
+✔ live: an unknown tool is an error, not a crash (42.9449ms)
+✔ live: a hostile browser Origin is refused (74.0745ms)
+✔ live: browser Origins of the three chat hosts are accepted, with a CORS preflight (362.8924ms)
+✔ live: the official MCP client connects, lists the 4 tools, calls each one and reads the view (596.1757ms)
+✔ live: check_app_preview_spec reads a real hosted preview by URL (93.1976ms)
+✔ live: / and /health answer, GET /mcp is not a session stream (144.81ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2974.1305

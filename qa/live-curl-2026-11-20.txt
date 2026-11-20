@@ -10,3 +10,30 @@ data: {"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listCh
 
 ## 2026-07-28 tools/call list_services
 "summary":"1 service line on https://giannis-builds.pages.dev."
+
+## Repair pass, 2026-11-20T20:43:48Z, Worker version 240fa608-f4c2-4138-a260-f163616ac60f
+### check_app_preview_spec 886x1920, 20 s, 30 fps, 40 MB: passing rows carry no fix (was: 'Cut -10 s', 'No accepted size...' on pass rows)
+verdict: pass_on_given_fields
+  container not_checked fix: (none)
+  filesize pass fix: (none)
+  length pass fix: (none)
+  size pass fix: (none)
+  rotation not_checked fix: (none)
+  codec not_checked fix: (none)
+  profile not_checked fix: (none)
+  level not_checked fix: (none)
+  progressive not_checked fix: (none)
+  fps pass fix: (none)
+  audio not_checked fix: (none)
+  audiocodec not_checked fix: (none)
+  samplerate not_checked fix: (none)
+  enabled not_checked fix: (none)
+### Origin rule (POST tools/list, then OPTIONS preflight)
+  https://claude.ai POST=200 OPTIONS=200
+  https://chatgpt.com POST=200 OPTIONS=200
+  https://grok.com POST=200 OPTIONS=200
+  https://evil.example POST=403 OPTIONS=403
+  (no Origin) POST=200
+### list_services builder: connector build marked as not on the site
+  summary: 1 service line on https://giannis-builds.pages.dev, plus the MCP connector build offered through this server (not on the site yet).
+  listed_on_site: false

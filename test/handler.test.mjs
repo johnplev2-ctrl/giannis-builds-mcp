@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/index.js";
 import { protocolSuite } from "./suite.mjs";
+import { sdkClientSuite } from "./sdk-client.mjs";
 
 const ORIGIN = "https://giannis-builds-mcp.example.workers.dev";
 const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };
@@ -10,6 +11,9 @@ const ctx = { waitUntil() {}, passThroughOnException() {}, props: {} };
 const doFetch = (url, init = {}) => worker.fetch(new Request(url, { ...init, headers: { host: new URL(url).host, ...(init.headers ?? {}) } }), {}, ctx);
 
 protocolSuite("local", `${ORIGIN}/mcp`, doFetch);
+// The SDK client passes a URL object and a Headers instance: rebuild the Request and add Host the same way.
+const sdkFetch = (u, init = {}) => { const req = new Request(u, init); const h = new Headers(req.headers); h.set("host", new URL(String(u)).host); return worker.fetch(new Request(req, { headers: h }), {}, ctx); };
+sdkClientSuite("local", `${ORIGIN}/mcp`, sdkFetch);
 
 test("local: / explains how to connect, /health lists the tools, other paths 404", async () => {
   const home = await doFetch(`${ORIGIN}/`);

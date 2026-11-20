@@ -1,0 +1,106 @@
+[
+  {
+    "name": "estimate_abandoned_checkout_recovery",
+    "w": 720,
+    "theme": "light",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 381
+  },
+  {
+    "name": "estimate_abandoned_checkout_recovery",
+    "w": 390,
+    "theme": "dark",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 381
+  },
+  {
+    "name": "estimate_internal_tool_cost",
+    "w": 720,
+    "theme": "light",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 526
+  },
+  {
+    "name": "estimate_internal_tool_cost",
+    "w": 390,
+    "theme": "dark",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 526
+  },
+  {
+    "name": "check_app_preview_spec",
+    "w": 720,
+    "theme": "light",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 865
+  },
+  {
+    "name": "check_app_preview_spec",
+    "w": 390,
+    "theme": "dark",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 865
+  },
+  {
+    "name": "list_services",
+    "w": 720,
+    "theme": "light",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 307
+  },
+  {
+    "name": "list_services",
+    "w": 390,
+    "theme": "dark",
+    "ok": true,
+    "handshake": [
+      "ui/initialize",
+      "ui/notifications/size-changed",
+      "ui/notifications/initialized",
+      "ui/notifications/size-changed"
+    ],
+    "chars": 307
+  }
+]
